@@ -66,3 +66,36 @@ describe("factorial", () => {
     expect(factorial(4)).toBe(24);
   });
 });
+
+describe("test suite", () => {
+  it("string test case", () => {
+    const result = "the required file was not found";
+
+    // Loose (too general)
+    expect(result).toBeDefined();
+    // Tight (too specific)
+    expect(result).toBe("the required file was not found");
+    // Better assertion
+    expect(result).toMatch(/Not found/i);
+  });
+
+  it("Number test case", () => {
+    const result = [1, 2, 3];
+
+    // Loose (too general)
+    expect(result).toBeDefined();
+    // Tight (too specific)
+    expect(result).toEqual([1, 2, 3]);
+    // Better assertion
+    expect(result).toEqual(expect.arrayContaining([2, 1, 3]));
+
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it("Object test case", () => {
+    const result = { name: "sairam", id: 22 };
+    expect(result).toMatchObject({ name: "sairam" });
+    expect(result).toHaveProperty("name");
+    expect(typeof result.name).toBe("string");
+  });
+});
