@@ -1,10 +1,20 @@
-import { describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "vitest";
 import {
   calculateDiscount,
   canDrive,
+  fetchData,
   getCoupons,
   isPriceInRange,
   isValidUsername,
+  Stack,
   validateUserInput,
 } from "../src/core";
 describe("GetCoupons test cases", () => {
@@ -86,24 +96,6 @@ describe("validateUserInput", () => {
 });
 
 // Boundry testings
-describe("isPriceInRange", () => {
-  it("should retrun false if the price is outside the range", () => {
-    expect(isPriceInRange(-10, 0, 100)).toBe(false);
-  });
-
-  it("should retrun false if the price is above the range", () => {
-    expect(isPriceInRange(200, 0, 100)).toBe(false);
-  });
-
-  it("should retrun true if the price is in the range", () => {
-    expect(isPriceInRange(20, 10, 100)).toBe(true);
-  });
-
-  it("should retrun true if the price is equal to min or to the range", () => {
-    expect(isPriceInRange(100, 0, 100)).toBe(true);
-    expect(isPriceInRange(20, 20, 100)).toBe(true);
-  });
-});
 
 describe("isValidUSerName", () => {
   const minLength = 5;
@@ -145,5 +137,111 @@ describe("canDrive", () => {
     { age: 17, country: "", result: "Invalid country code" },
   ])("should retrun $result for $age, $country", ({ age, country, result }) => {
     expect(canDrive(age, country)).toBe(result);
+  });
+});
+
+describe("isPriceInRange", () => {
+  it.each([
+    { scenario: "price < min", price: -10, result: false },
+    { scenario: "price = min", price: 0, result: true },
+    { scenario: "price between min and max", price: 50, result: true },
+    { scenario: "price = min", price: 100, result: true },
+    { scenario: "price > min", price: 101, result: false },
+  ])("should retrun $result when $scenario", ({ price, result }) => {
+    expect(isPriceInRange(price, 0, 100)).toBe(result);
+  });
+});
+
+describe("fetchData with promise", () => {
+  it("should return a promise that will resolve to an array of numbers", async () => {
+    const result = await fetchData();
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it("should reject with an error", async () => {
+    await expect(fetchData(true)).rejects.toThrow(/fail/i);
+  });
+});
+
+describe("TearDownDemo", () => {
+  beforeAll(() => {
+    console.log("before all called");
+  });
+
+  beforeEach(() => {
+    console.log("before each test case called");
+  });
+
+  afterEach(() => {
+    console.log("after each test case called");
+  });
+
+  afterAll(() => {
+    console.log("after all called");
+  });
+
+  it("test case 1", () => {
+    console.log("test case 1 called");
+  });
+  it("test case 2", () => {
+    console.log("test case 2 called");
+  });
+});
+
+describe("Stack", () => {
+  let stack;
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  it("push should an item to the stack", () => {
+    stack.push(1);
+    stack.push(2);
+    expect(stack.size()).toBe(2);
+  });
+
+  it("pop should remove and return the top item from the stack", () => {
+    stack.push(1);
+    stack.push(2);
+    expect(stack.pop()).toBe(2);
+    expect(stack.size()).toBe(1);
+    expect(stack.pop()).toBe(1);
+  });
+
+  it("pop should throw an error if stack is empty", () => {
+    expect(() => stack.pop()).toThrow(/empty/i);
+  });
+
+  it("peack should return last element without removing the last element", () => {
+    stack.push(3);
+    stack.push(4);
+    expect(stack.peek()).toBe(4);
+    expect(stack.size()).toBe(2);
+  });
+
+  it("peack shouldthrow an error if stack is empty", () => {
+    expect(() => stack.peek()).toThrow(/empty/i);
+  });
+
+  it("is empty should return true when stack is empty", () => {
+    expect(stack.isEmpty()).toBe(true);
+  });
+
+  it("size should return number of items in the stack", () => {
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
+    stack.pop();
+    expect(stack.size()).toBe(2);
+  });
+
+  it("clear should remove all items from the stack", () => {
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
+    stack.pop();
+    stack.clear();
+    expect(stack.size()).toBe(0);
   });
 });

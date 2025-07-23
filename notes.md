@@ -49,6 +49,12 @@ bun run coverage
 **To run a specific testset**:
 bun vitest run -t "FizzBuzz"
 
+**To call testcases in a file**:
+ bun vitest .\tests\core.test.js
+
+ **To call testcases in a test suit**:
+ bun vitest -t isPriceInRange
+
 ## Test Design
 
 **Manintinable**:
