@@ -14,7 +14,7 @@ export function getPriceInCurrency(price, currency) {
 // Exercise
 export function getShippingInfo(destination) {
   const quote = getShippingQuote(destination);
-  //if (!quote) return 'Shipping Unavailable';
+  if (!quote) return "Shipping Unavailable";
   return `Shipping Cost: $${quote.cost} (${quote.estimatedDays} Days)`;
 }
 
@@ -29,8 +29,9 @@ export async function renderPage() {
 export async function submitOrder(order, creditCard) {
   const paymentResult = await charge(creditCard, order.totalAmount);
 
-  if (paymentResult.status === "failed")
+  if (paymentResult.status === "failed") {
     return { success: false, error: "payment_error" };
+  }
 
   return { success: true };
 }
@@ -57,7 +58,7 @@ export function isOnline() {
   const [open, close] = availableHours;
   const currentHour = new Date().getHours();
 
-  return currentHour >= open && currentHour <= close;
+  return currentHour >= open && currentHour < close;
 }
 
 // Exercise
