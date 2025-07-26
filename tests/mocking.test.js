@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import { trackPageView } from "../src/analytics.js";
 import { getExchangeRate, getPriceInCurrency } from "../src/libs/currency.js";
 import { getShippingInfo, getShippingQuote } from "../src/libs/shipping.js";
+import { renderPage } from "../src/mocking.js";
 
 vi.mock("../src/libs/currency.js", () => {
   const mockGetExchangeRate = vi.fn();
@@ -76,5 +78,17 @@ describe("mocking Demos", () => {
 
     expect(result).toMatch("$10");
     expect(result).toMatch(/2 Days/i);
+  });
+});
+
+describe("renderPage", () => {
+  it("should return correct content", async () => {
+    const result = await renderPage();
+    expect(result).toMatch(/content/i);
+  });
+
+  it("should call analytics", async () => {
+    await trackPageView();
+    expect(trackPageView).toHaveBeenCalledWith("/home");
   });
 });
