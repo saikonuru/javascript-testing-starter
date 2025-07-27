@@ -1,4 +1,4 @@
-# Mastering JavaScript Unit Testing
+# Unit Testing JavaScript Code
 
 This repository contains all of the examples and exercises for my JavaScript testing course.
 
