@@ -1,12 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import { trackPageView } from "../src/libs/analytics";
 import { getExchangeRate } from "../src/libs/currency";
+import { sendEmail } from "../src/libs/email";
 import { charge } from "../src/libs/payment";
 import { getShippingQuote } from "../src/libs/shipping";
 import {
   getPriceInCurrency,
   getShippingInfo,
   renderPage,
+  signUp,
   submitOrder,
 } from "../src/mocking";
 
@@ -14,6 +16,7 @@ vi.mock("../src/libs/currency");
 vi.mock("../src/libs/shipping");
 vi.mock("../src/libs/analytics");
 vi.mock("../src/libs/payment");
+// Partial mocking - Replaces some of the functions in a module
 vi.mock("../src/libs/email", async (importOriginal) => {
   const originalModule = await importOriginal();
   return {
@@ -87,7 +90,7 @@ describe("submitOrder", () => {
   const creditCard = { creditCardNumber: "1234" };
 
   it("should charge the customer", async () => {
-    vi.mocked(charge).mockResolvedValue({ status: "success" });
+    vi.mocked(charge).mockResolvedValue({ status: "success" }); //mockResolvedValue - becasuse the function returns a promise
 
     await submitOrder(order, creditCard);
 
@@ -108,5 +111,29 @@ describe("submitOrder", () => {
     const result = await submitOrder(order, creditCard);
 
     expect(result).toEqual({ success: false, error: "payment_error" });
+  });
+});
+
+describe("signUp", () => {
+  let email = "sai@gmail.com";
+  it("should rerurn false if email is not valid", async () => {
+    const result = await signUp("a");
+
+    expect(result).toBe(false);
+  });
+
+  it("should rerurn true if email is valid", async () => {
+    const result = await signUp(email);
+
+    expect(result).toBe(true);
+  });
+
+  it("shouldsend the welcome email if email is valid", async () => {
+    const result = await signUp(email);
+
+    expect(sendEmail).toHaveBeenCalled();
+    const args = vi.mocked(sendEmail).mock.calls[0];
+    expect(args[0]).toBe(email);
+    expect(args[1]).toMatch(/welcome/i);
   });
 });
